@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -35,13 +35,14 @@ namespace MediaBrowser.Server.Installer
                 Trace.AutoFlush = true;
                 var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
 
-                request.InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server");
-
-                // Use the old path only if it's already there
-                if (!Directory.Exists(request.InstallPath))
+                var installPaths = new List<string>
                 {
-                    request.InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server");
-                }
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server"),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server")
+                };
+
+                request.InstallPath = installPaths.FirstOrDefault(Directory.Exists) ??
+                    installPaths.FirstOrDefault();
 
                 request.ReportStatus = UpdateStatus;
                 request.Progress = new ProgressUpdater(this);

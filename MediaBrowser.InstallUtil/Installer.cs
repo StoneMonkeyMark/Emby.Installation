@@ -656,11 +656,10 @@ namespace MediaBrowser.InstallUtil
 
             if (PackageName == "MBServer")
             {
-                var path = Path.Combine(startMenu, "MB Dashboard.lnk");
+                var path = Path.Combine(startMenu, "Emby Server Dashboard.lnk");
                 Trace.TraceInformation("Creating dashboard shortcut {0}", path);
-                var dashboard = new ShellShortcut(path) { Path = @"http://localhost:8096/mediabrowser/dashboard/dashboard.html", Description = "Open the Media Browser Server Dashboard (configuration)" };
+                var dashboard = new ShellShortcut(path) { Path = @"http://localhost:8096/web/dashboard.html", Description = "Open the Emby Server Dashboard" };
                 dashboard.Save();
-
             }
 
             return CreateUninstaller(Path.Combine(Path.GetDirectoryName(targetExe) ?? "", "MediaBrowser.Uninstaller.exe") + " " + (PackageName == "MBServer" ? "server" : "mbt"), targetExe);

@@ -49,7 +49,7 @@ namespace MediaBrowser.Uninstaller
                     //copy the real program to a temp location so we can delete everything here (including us)
                     var us = Assembly.GetExecutingAssembly().Location;
                     var tempExe = Path.Combine(Path.GetTempPath(), Path.GetFileName(us) ?? "Mediabrowser.Uninstaller.exe");
-                    File.Copy(us,tempExe,true);
+                    File.Copy(us, tempExe, true);
                     //get our pid to pass to the uninstaller so it can wait for us to exit
                     var pid = Process.GetCurrentProcess().Id;
                     //kick off the copy
@@ -80,8 +80,8 @@ namespace MediaBrowser.Uninstaller
 
                 }
 
-                lblHeading.Content = this.Title = "Uninstall Media Browser " + Product;
-                
+                lblHeading.Content = this.Title = "Uninstall Emby " + Product;
+
             }
 
         }
@@ -108,22 +108,35 @@ namespace MediaBrowser.Uninstaller
             btnCancel.IsEnabled = btnUninstall.IsEnabled = false;
             grdOptions.Visibility = Visibility.Hidden;
 
-            var startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3");
-            var linkName = "Media Browser " + Product + ".lnk";
+            string startMenu;
+            string linkName;
+
+            if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3")))
+            {
+                startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3");
+                linkName = "Media Browser " + Product + ".lnk";
+            }
+            else
+            {
+                startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Emby");
+                linkName = "Emby " + Product + ".lnk";
+            }
+
             RemoveShortcut(Path.Combine(startMenu, linkName));
-            RemoveShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup),linkName));
+            RemoveShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), linkName));
             linkName = "Uninstall " + linkName;
             RemoveShortcut(Path.Combine(startMenu, linkName));
             if (Product == "Server")
             {
                 RemoveShortcut(Path.Combine(startMenu, "MB Dashboard.lnk"));
+                RemoveShortcut(Path.Combine(startMenu, "Emby Server Dashboard.lnk"));
                 var procs = Process.GetProcessesByName("mediabrowser.serverapplication");
                 var server = procs.Length > 0 ? procs[0] : null;
                 if (server != null)
                 {
                     using (var client = new WebClient())
                     {
-                        lblHeading.Content = "Shutting Down Media Browser Server...";
+                        lblHeading.Content = "Shutting Down Emby Server...";
                         try
                         {
                             client.UploadString("http://localhost:8096/mediabrowser/system/shutdown", "");
@@ -171,14 +184,14 @@ namespace MediaBrowser.Uninstaller
                 var processes = Process.GetProcessesByName("mediabrowser.ui");
                 if (processes.Length > 0)
                 {
-                    lblHeading.Content = "Shutting Down Media Browser Theater...";
+                    lblHeading.Content = "Shutting Down Emby Theater...";
                     try
                     {
                         processes[0].Kill();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Unable to shutdown Media Browser Theater.  Please ensure it is not running before hitting OK.\n\n" + ex.Message, "Error");
+                        MessageBox.Show("Unable to shutdown Emby Theater.  Please ensure it is not running before hitting OK.\n\n" + ex.Message, "Error");
                     }
                 }
             }
@@ -249,7 +262,7 @@ namespace MediaBrowser.Uninstaller
             }
 
             // and done
-            lblHeading.Content = string.Format("Media Browser {0} Uninstalled.", Product);
+            lblHeading.Content = string.Format("Emby {0} Uninstalled.", Product);
             btnUninstall.Visibility = Visibility.Hidden;
             btnFinished.Visibility = Visibility.Visible;
         }
@@ -279,7 +292,7 @@ namespace MediaBrowser.Uninstaller
                 try
                 {
                     const string guidText = "{4E76DB4E-1BB9-4A7B-860C-7940779CF7A0}";
-                    parent.DeleteSubKey(guidText,false);
+                    parent.DeleteSubKey(guidText, false);
 
                 }
                 catch (Exception ex)
@@ -321,7 +334,7 @@ namespace MediaBrowser.Uninstaller
             {
                 MessageBox.Show(string.Format("Error attempting to remove progam folder {0}\n\n {1}", path, ex.Message), "Error");
             }
-            
+
         }
 
         private void BtnFinished_OnClick(object sender, RoutedEventArgs e)
