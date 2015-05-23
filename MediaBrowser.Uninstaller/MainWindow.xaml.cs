@@ -139,7 +139,7 @@ namespace MediaBrowser.Uninstaller
                         lblHeading.Content = "Shutting Down Emby Server...";
                         try
                         {
-                            client.UploadString("http://localhost:8096/mediabrowser/system/shutdown", "");
+                            client.UploadString("http://localhost:8096/system/shutdown", "");
                             try
                             {
                                 server.WaitForExit();
@@ -167,6 +167,22 @@ namespace MediaBrowser.Uninstaller
                                    FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server", "System", "MediaBrowser.ServerApplication.exe"),
                                    Verb = "runas"
                                };
+                server = Process.Start(info);
+                try
+                {
+                    server.WaitForExit();
+                }
+                catch (ArgumentException)
+                {
+                    // already gone
+                }
+
+                info = new ProcessStartInfo
+               {
+                   Arguments = "-uninstallservice",
+                   FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server", "System", "MediaBrowser.ServerApplication.exe"),
+                   Verb = "runas"
+               };
                 server = Process.Start(info);
                 try
                 {
