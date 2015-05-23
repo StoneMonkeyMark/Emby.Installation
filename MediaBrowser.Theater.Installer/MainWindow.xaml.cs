@@ -40,13 +40,7 @@ namespace MediaBrowser.Theater.Installer
             Trace.AutoFlush = true;
             var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
 
-            var installPaths = new List<string>
-            {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Theater"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Theater")
-            };
-            request.InstallPath = installPaths.FirstOrDefault(Directory.Exists) ?? 
-                installPaths.FirstOrDefault();
+            request.InstallPath = InstallUtil.Installer.GetTheaterInstallPath();
 
             request.ReportStatus = UpdateStatus;
             request.Progress = new ProgressUpdater(this);

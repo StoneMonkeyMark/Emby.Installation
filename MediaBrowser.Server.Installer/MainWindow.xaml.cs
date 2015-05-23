@@ -35,14 +35,7 @@ namespace MediaBrowser.Server.Installer
                 Trace.AutoFlush = true;
                 var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
 
-                var installPaths = new List<string>
-                {
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server"),
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server")
-                };
-
-                request.InstallPath = installPaths.FirstOrDefault(Directory.Exists) ??
-                    installPaths.FirstOrDefault();
+                request.InstallPath = InstallUtil.Installer.GetServerInstallPath();
 
                 request.ReportStatus = UpdateStatus;
                 request.Progress = new ProgressUpdater(this);

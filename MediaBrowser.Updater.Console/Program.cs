@@ -13,7 +13,7 @@ namespace MediaBrowser.Updater.Console
 
         static void Main(string[] args)
         {
-            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-InstallLogs");
+            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-InstallLogs");
             if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
             var request = Installer.ParseArgsAndWait(args);
             var logFile = Path.Combine(logPath, request.Product + "-update.log");

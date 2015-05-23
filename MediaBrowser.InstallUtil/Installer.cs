@@ -74,7 +74,7 @@ namespace MediaBrowser.InstallUtil
                     RootSuffix = "-Theater";
                     TargetExe = "MediaBrowser.UI.exe";
                     FriendlyName = "Emby Theater";
-                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "Emby" + RootSuffix);
+                    RootPath = request.InstallPath ?? GetTheaterInstallPath();
                     EndInstallPath = Path.Combine(RootPath, "system");
                     break;
 
@@ -93,11 +93,33 @@ namespace MediaBrowser.InstallUtil
                     RootSuffix = "-Server";
                     TargetExe = "MediaBrowser.ServerApplication.exe";
                     FriendlyName = "Emby Server";
-                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "Emby" + RootSuffix);
+                    RootPath = request.InstallPath ?? GetServerInstallPath();
                     EndInstallPath = Path.Combine(RootPath, "system");
                     break;
             }
 
+        }
+
+        public static string GetServerInstallPath()
+        {
+            var installPaths = new List<string>
+            {
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server"),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server")
+            };
+            return installPaths.FirstOrDefault(Directory.Exists) ??
+                installPaths.FirstOrDefault();
+        }
+
+        public static string GetTheaterInstallPath()
+        {
+            var installPaths = new List<string>
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Theater"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Theater")
+            };
+            return installPaths.FirstOrDefault(Directory.Exists) ??
+                installPaths.FirstOrDefault();
         }
 
         public static bool IsAdmin 
