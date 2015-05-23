@@ -30,19 +30,19 @@ namespace MediaBrowser.InstallUtil
         protected string RootSuffix = "-Server";
         protected string TargetExe = "MediaBrowser.ServerApplication.exe";
         protected string TargetArgs = "";
-        protected string FriendlyName = "Media Browser Server";
+        protected string FriendlyName = "Emby Server";
         protected string Archive = null;
         protected static string AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         protected static string StartMenuFolder = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
-        protected string RootPath = Path.Combine(AppDataFolder, "MediaBrowser-Server");
-        protected string EndInstallPath = Path.Combine(AppDataFolder, "MediaBrowser-Server");
-        protected string StartMenuPath = Path.Combine(StartMenuFolder, "Media Browser 3");
+        protected string RootPath = Path.Combine(AppDataFolder, "Emby-Server");
+        protected string EndInstallPath = Path.Combine(AppDataFolder, "Emby-Server");
+        protected string StartMenuPath = Path.Combine(StartMenuFolder, "Emby");
         protected IProgress<double> Progress;
         protected Action<string> ReportStatus;
         protected string ServiceName;
         protected InstallOperation Operation;
 
-        protected static string TempLocation = Path.Combine(Path.GetTempPath(), "MediaBrowser");
+        protected static string TempLocation = Path.Combine(Path.GetTempPath(), "Emby");
 
         protected WebClient MainClient;
 
@@ -73,8 +73,8 @@ namespace MediaBrowser.InstallUtil
                     PackageName = "MBTheater";
                     RootSuffix = "-Theater";
                     TargetExe = "MediaBrowser.UI.exe";
-                    FriendlyName = "Media Browser Theater";
-                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "MediaBrowser" + RootSuffix);
+                    FriendlyName = "Emby Theater";
+                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "Emby" + RootSuffix);
                     EndInstallPath = Path.Combine(RootPath, "system");
                     break;
 
@@ -92,8 +92,8 @@ namespace MediaBrowser.InstallUtil
                     PackageName = "MBServer";
                     RootSuffix = "-Server";
                     TargetExe = "MediaBrowser.ServerApplication.exe";
-                    FriendlyName = "Media Browser Server";
-                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "MediaBrowser" + RootSuffix);
+                    FriendlyName = "Emby Server";
+                    RootPath = request.InstallPath ?? Path.Combine(AppDataFolder, "Emby" + RootSuffix);
                     EndInstallPath = Path.Combine(RootPath, "system");
                     break;
             }

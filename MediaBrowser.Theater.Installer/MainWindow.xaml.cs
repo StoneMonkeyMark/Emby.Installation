@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Installer
         public MainWindow()
         {
             InitializeComponent();
-            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-InstallLogs");
+            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-InstallLogs");
             if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
             var logFile = Path.Combine(logPath, "theater-install.log");
             if (File.Exists(logFile)) File.Delete(logFile);
@@ -40,6 +40,13 @@ namespace MediaBrowser.Theater.Installer
             Trace.AutoFlush = true;
             var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
             request.InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Theater");
+
+            // Use the old path only if it's already there
+            if (!Directory.Exists(request.InstallPath))
+            {
+                request.InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Theater");
+            }
+
             request.ReportStatus = UpdateStatus;
             request.Progress = new ProgressUpdater(this);
             request.WebClient = MainClient;
