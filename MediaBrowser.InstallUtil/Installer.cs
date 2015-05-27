@@ -77,7 +77,7 @@ namespace MediaBrowser.InstallUtil
                 case "mbc":
                     PackageName = "MBClassic";
                     TargetArgs = @"/nostartupanimation /entrypoint:{CE32C570-4BEC-4aeb-AD1D-CF47B91DE0B2}\{FC9ABCCC-36CB-47ac-8BAB-03E8EF5F6F22}";
-                    FriendlyName = "Media Browser Classic";
+                    FriendlyName = "Emby for WMC";
                     ProgramDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "MediaBrowser" + "-Classic");
                     TargetExecutablePath = request.TargetExecutablePath ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ehome", "ehshell.exe");
                     SystemPath = request.SystemPath ?? Path.Combine(ProgramDataPath, "system");
