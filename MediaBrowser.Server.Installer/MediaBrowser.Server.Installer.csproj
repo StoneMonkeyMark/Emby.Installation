@@ -14,7 +14,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>http://www.mb3admin.com/downloads/dev/server/</PublishUrl>
+    <PublishUrl>..\..\Deploy\server\installation\beta\</PublishUrl>
     <Install>false</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -24,12 +24,13 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>http://mb3admin.com/downloads/beta/server/</InstallUrl>
     <SupportUrl>http://emby.media/community</SupportUrl>
     <ProductName>Emby Server Installer</ProductName>
     <PublisherName>Emby Media</PublisherName>
     <SuiteName>Emby</SuiteName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>25</ApplicationRevision>
+    <ApplicationRevision>27</ApplicationRevision>
     <ApplicationVersion>3.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -58,10 +59,10 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>2B4188056AF22877205EA31A365C8FFB56C3EDBF</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B3E320763398E7F1C619B3255B0F51C17D82C2FE</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>MediaBrowser.Server.Installer_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>MediaBrowser.Server.Installer_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -124,6 +125,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="MediaBrowser.Server.Installer_1_TemporaryKey.pfx" />
     <None Include="MediaBrowser.Server.Installer_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
