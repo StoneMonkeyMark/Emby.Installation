@@ -24,10 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <SupportUrl>http://community.mediabrowser.tv</SupportUrl>
-    <ProductName>Media Browser Server Installer</ProductName>
-    <PublisherName>Media Browser Team</PublisherName>
-    <SuiteName>Media Browser</SuiteName>
+    <SupportUrl>http://emby.media/community</SupportUrl>
+    <ProductName>Emby Server Installer</ProductName>
+    <PublisherName>Emby Media</PublisherName>
+    <SuiteName>Emby</SuiteName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>25</ApplicationRevision>
     <ApplicationVersion>3.0.1.%2a</ApplicationVersion>

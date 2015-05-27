@@ -25,14 +25,14 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://mb3admin.com/downloads/beta/mbt/</InstallUrl>
-    <SupportUrl>http://community.mediabrowser.tv</SupportUrl>
-    <ProductName>Media Browser Theater Installer</ProductName>
-    <PublisherName>Media Browser Team</PublisherName>
-    <SuiteName>Media Browser 3</SuiteName>
+    <SupportUrl>http://emby.media/community</SupportUrl>
+    <ProductName>Emby Theater Installer</ProductName>
+    <PublisherName>Emby Media</PublisherName>
+    <SuiteName>Emby</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationRevision>17</ApplicationRevision>
     <ApplicationVersion>3.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
