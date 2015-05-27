@@ -27,20 +27,18 @@ namespace MediaBrowser.InstallUtil
         protected Version RequestedVersion = new Version(4, 0, 0, 0);
         protected Version ActualVersion;
         protected string PackageName = "MBServer";
-        protected string RootSuffix = "-Server";
-        protected string TargetExe = "MediaBrowser.ServerApplication.exe";
+        protected string TargetExecutablePath;
         protected string TargetArgs = "";
         protected string FriendlyName = "Emby Server";
         protected string Archive = null;
-        protected static string AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         protected static string StartMenuFolder = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
-        protected string RootPath = Path.Combine(AppDataFolder, "Emby-Server");
-        protected string EndInstallPath = Path.Combine(AppDataFolder, "Emby-Server");
+        protected string ProgramDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server");
         protected string StartMenuPath = Path.Combine(StartMenuFolder, "Emby");
         protected IProgress<double> Progress;
         protected Action<string> ReportStatus;
         protected string ServiceName;
         protected InstallOperation Operation;
+        protected string SystemPath;
 
         protected static string TempLocation = Path.Combine(Path.GetTempPath(), "Emby");
 
@@ -65,42 +63,38 @@ namespace MediaBrowser.InstallUtil
             ReportStatus = request.ReportStatus;
             MainClient = request.WebClient;
             ServiceName = request.ServiceName;
-            AppDataFolder = request.InstallPath ?? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             switch (request.Product.ToLower())
             {
                 case "mbt":
                     PackageName = "MBTheater";
-                    RootSuffix = "-Theater";
-                    TargetExe = "MediaBrowser.UI.exe";
                     FriendlyName = "Emby Theater";
-                    RootPath = request.InstallPath ?? GetTheaterInstallPath();
-                    EndInstallPath = Path.Combine(RootPath, "system");
+                    ProgramDataPath = request.ProgramDataPath ?? GetTheaterProgramDataPath();
+                    TargetExecutablePath = request.TargetExecutablePath ?? Path.Combine(ProgramDataPath, "system", "MediaBrowser.UI.exe");
+                    SystemPath = request.SystemPath ?? Path.GetDirectoryName(TargetExecutablePath);
                     break;
 
                 case "mbc":
                     PackageName = "MBClassic";
-                    RootSuffix = "-Classic";
-                    TargetExe = "ehshell.exe";
                     TargetArgs = @"/nostartupanimation /entrypoint:{CE32C570-4BEC-4aeb-AD1D-CF47B91DE0B2}\{FC9ABCCC-36CB-47ac-8BAB-03E8EF5F6F22}";
                     FriendlyName = "Media Browser Classic";
-                    RootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "MediaBrowser" + RootSuffix);
-                    EndInstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ehome");
+                    ProgramDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "MediaBrowser" + "-Classic");
+                    TargetExecutablePath = request.TargetExecutablePath ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "ehome", "ehshell.exe");
+                    SystemPath = request.SystemPath ?? Path.Combine(ProgramDataPath, "system");
                     break;
 
                 default:
                     PackageName = "MBServer";
-                    RootSuffix = "-Server";
-                    TargetExe = "MediaBrowser.ServerApplication.exe";
                     FriendlyName = "Emby Server";
-                    RootPath = request.InstallPath ?? GetServerInstallPath();
-                    EndInstallPath = Path.Combine(RootPath, "system");
+                    ProgramDataPath = request.ProgramDataPath ?? GetServerProgramDataPath();
+                    TargetExecutablePath = request.TargetExecutablePath ?? Path.Combine(ProgramDataPath, "system", "MediaBrowser.ServerApplication.exe");
+                    SystemPath = request.SystemPath ?? Path.GetDirectoryName(TargetExecutablePath);
                     break;
             }
 
         }
 
-        public static string GetServerInstallPath()
+        public static string GetServerProgramDataPath()
         {
             var installPaths = new List<string>
             {
@@ -111,7 +105,7 @@ namespace MediaBrowser.InstallUtil
                 installPaths.FirstOrDefault();
         }
 
-        public static string GetTheaterInstallPath()
+        public static string GetTheaterProgramDataPath()
         {
             var installPaths = new List<string>
             {
@@ -154,7 +148,9 @@ namespace MediaBrowser.InstallUtil
             request.PackageClass = (PackageVersionClass)Enum.Parse(typeof(PackageVersionClass), args.GetValueOrDefault("class", null) ?? ConfigurationManager.AppSettings["class"] ?? "Release");
             request.Version = new Version(args.GetValueOrDefault("version", "4.0"));
             request.ServiceName = args.GetValueOrDefault("service", string.Empty);
-            request.InstallPath = args.GetValueOrDefault("installpath", null);
+            request.ProgramDataPath = args.GetValueOrDefault("installpath", null);
+            request.TargetExecutablePath = args.GetValueOrDefault("startpath", null);
+            request.SystemPath = args.GetValueOrDefault("systempath", null);
 
             var callerId = args.GetValueOrDefault("caller", null);
             if (callerId != null)
@@ -277,12 +273,12 @@ namespace MediaBrowser.InstallUtil
             if (Archive == null) return new InstallationResult(false);  //we canceled or had an error that was already reported
 
             // Create our main directory and set permissions - this should only happen on install
-            if (!Directory.Exists(RootPath))
+            if (!Directory.Exists(ProgramDataPath))
             {
-                Trace.TraceInformation("Creating directory {0}", RootPath);
+                Trace.TraceInformation("Creating directory {0}", ProgramDataPath);
                 ReportStatus("Configuring directories.  This may take a minute...");
-                var info = Directory.CreateDirectory(RootPath);
-                //Trace.TraceInformation("Attempting to set access rights on {0}", RootPath);
+                var info = Directory.CreateDirectory(ProgramDataPath);
+                //Trace.TraceInformation("Attempting to set access rights on {0}", ProgramDataPath);
                 //await SetPermissions(info);
             }
 
@@ -307,7 +303,7 @@ namespace MediaBrowser.InstallUtil
 
                 // Create shortcut
                 ReportStatus("Creating Shortcuts...");
-                var fullPath = Path.Combine(RootPath, "System", TargetExe);
+                var fullPath = TargetExecutablePath;
 
                 try
                 {
@@ -325,7 +321,7 @@ namespace MediaBrowser.InstallUtil
 
             // Now delete the pismo install files
             Trace.TraceInformation("Deleting Pismo install files");
-            RemovePath(Path.Combine(RootPath, "Pismo"));
+            RemovePath(Path.Combine(ProgramDataPath, "Pismo"));
 
             // Update stats
             UpdateStats();
@@ -353,9 +349,11 @@ namespace MediaBrowser.InstallUtil
 
         protected async Task<InstallationResult> Extract(string archive)
         {
+            var backupDir = Path.Combine(ProgramDataPath, "System.old");
+
             Trace.TraceInformation("Starting extract package.");
             ReportStatus("Extracting Package...");
-            var result = await ExtractPackage(archive);
+            var result = await ExtractPackage(archive, SystemPath, backupDir);
 
             if (!result.Success)
             {
@@ -371,7 +369,7 @@ namespace MediaBrowser.InstallUtil
                 TryDelete(archive);
                 // Also be sure there isn't an old update lying around
                 Trace.TraceInformation("Deleting any old updates as well.");
-                RemovePath(Path.Combine(RootPath, "Updates"));
+                RemovePath(Path.Combine(ProgramDataPath, "Updates"));
             }
 
             return new InstallationResult();
@@ -382,13 +380,13 @@ namespace MediaBrowser.InstallUtil
             try
             {
                 Trace.TraceInformation("Archive is MSI installer {0}", archive);
-                var logPath = Path.Combine(RootPath, "Logs");
+                var logPath = Path.Combine(ProgramDataPath, "Logs");
                 if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
 
                 // Run in silent mode and wait for it to finish
                 // First uninstall any previous version
                 //ReportStatus("Uninstalling any previous version...");
-                //var logfile = Path.Combine(RootPath, "logs", "MsiUnInstall.log");
+                //var logfile = Path.Combine(ProgramDataPath, "logs", "MsiUnInstall.log");
                 //Trace.TraceInformation("Calling msi uninstall");
                 //var uninstaller = Process.Start("msiexec.exe", "/x \"" + archive + "\" /quiet /le \"" + logfile + "\"");
                 //if (uninstaller != null) uninstaller.WaitForExit();
@@ -396,7 +394,7 @@ namespace MediaBrowser.InstallUtil
                 // And now installer
                 Trace.TraceInformation("Calling msi install");
                 ReportStatus("Installing " + FriendlyName);
-                var logfile = Path.Combine(RootPath, "logs", PackageName+"-Msi.log");
+                var logfile = Path.Combine(ProgramDataPath, "logs", PackageName+"-Msi.log");
                 var installer = Process.Start("msiexec.exe", "/i \"" + archive + "\" /quiet /l \"" + logfile + "\"");
                 installer.WaitForExit(); // let this throw if there is a problem
             }
@@ -427,16 +425,18 @@ namespace MediaBrowser.InstallUtil
                 return new InstallationResult();
             }
 
-            Trace.TraceInformation("Attempting to start program {0} {1}", Path.Combine(EndInstallPath, TargetExe), TargetArgs);
+            var executablePath = TargetExecutablePath;
+
+            Trace.TraceInformation("Attempting to start program {0} {1}", executablePath, TargetArgs);
             ReportStatus(String.Format("Starting {0}...", FriendlyName));
             try
             {
-                Process.Start(Path.Combine(EndInstallPath, TargetExe), TargetArgs);
+                Process.Start(executablePath, TargetArgs);
             }
             catch (Exception e)
             {
                 Trace.TraceError("Error starting program. Installation should still be valid. {0}", e.Message);
-                return new InstallationResult(false, "Error Executing - " + Path.Combine(EndInstallPath, TargetExe) + " " + TargetArgs, e);
+                return new InstallationResult(false, "Error Executing - " + executablePath + " " + TargetArgs, e);
             }
 
             Trace.TraceInformation("Installation complete");
@@ -581,13 +581,11 @@ namespace MediaBrowser.InstallUtil
         /// It is assumed the archive is a zip file relative to that root (with all necessary sub-folders)
         /// </summary>
         /// <param name="archive"></param>
-        protected Task<InstallationResult> ExtractPackage(string archive)
+        protected Task<InstallationResult> ExtractPackage(string archive, string systemDir, string backupDir)
         {
             return Task.Run(() =>
                                 {
                                     // Delete old content of system
-                                    var systemDir = Path.Combine(RootPath, "System");
-                                    var backupDir = Path.Combine(RootPath, "System.old");
                                     if (Directory.Exists(systemDir))
                                     {
                                         Trace.TraceInformation("Creating backup by moving {0} to {1}", systemDir, backupDir);
@@ -624,7 +622,7 @@ namespace MediaBrowser.InstallUtil
                                             using (var fs = File.OpenRead(archive))
                                             using (var reader = ReaderFactory.Open(fs))
                                             {
-                                                reader.WriteAllToDirectory(RootPath, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
+                                                reader.WriteAllToDirectory(ProgramDataPath, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
                                                 success = true;
                                             }
                                         }
@@ -641,7 +639,7 @@ namespace MediaBrowser.InstallUtil
                                                 //Rollback
                                                 Trace.TraceError("Final extract attempt failed. Rolling back. Error: "+e.Message);
                                                 RollBack(systemDir, backupDir);
-                                                return new InstallationResult(false, String.Format("Could not extract {0} to {1} after {2} attempts.", archive, RootPath, retryCount), e);
+                                                return new InstallationResult(false, String.Format("Could not extract {0} to {1} after {2} attempts.", archive, ProgramDataPath, retryCount), e);
                                             }
                                         }
                                     }

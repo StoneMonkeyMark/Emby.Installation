@@ -35,7 +35,7 @@ namespace MediaBrowser.Server.Installer
                 Trace.AutoFlush = true;
                 var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
 
-                request.InstallPath = InstallUtil.Installer.GetServerInstallPath();
+                request.ProgramDataPath = InstallUtil.Installer.GetServerProgramDataPath();
 
                 request.ReportStatus = UpdateStatus;
                 request.Progress = new ProgressUpdater(this);

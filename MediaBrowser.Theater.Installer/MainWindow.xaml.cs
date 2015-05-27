@@ -40,7 +40,7 @@ namespace MediaBrowser.Theater.Installer
             Trace.AutoFlush = true;
             var request = InstallUtil.Installer.ParseArgsAndWait(Environment.GetCommandLineArgs());
 
-            request.InstallPath = InstallUtil.Installer.GetTheaterInstallPath();
+            request.ProgramDataPath = InstallUtil.Installer.GetTheaterProgramDataPath();
 
             request.ReportStatus = UpdateStatus;
             request.Progress = new ProgressUpdater(this);
