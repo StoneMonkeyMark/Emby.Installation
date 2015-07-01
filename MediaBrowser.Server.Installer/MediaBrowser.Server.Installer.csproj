@@ -30,7 +30,7 @@
     <PublisherName>Emby Media</PublisherName>
     <SuiteName>Emby</SuiteName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>27</ApplicationRevision>
+    <ApplicationRevision>30</ApplicationRevision>
     <ApplicationVersion>3.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -139,9 +139,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\mb3logo800.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.InstallUtil\MediaBrowser.InstallUtil.csproj">
       <Project>{53b4d262-ee37-406f-ba43-d5e12240937d}</Project>
       <Name>MediaBrowser.InstallUtil</Name>
@@ -171,6 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo800.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
