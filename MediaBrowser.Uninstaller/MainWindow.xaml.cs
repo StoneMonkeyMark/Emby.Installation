@@ -161,36 +161,31 @@ namespace MediaBrowser.Uninstaller
 
                 // Now call back to un-install the service in case it was installed
                 lblHeading.Content = "Removing Service Installation...";
+                // Determine proper path
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server", "System", "MediaBrowser.ServerApplication.exe");
+                if (!File.Exists(path)) path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server", "System", "MediaBrowser.ServerApplication.exe");
                 var info = new ProcessStartInfo
                                {
                                    Arguments = "-uninstallservice",
-                                   FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser-Server", "System", "MediaBrowser.ServerApplication.exe"),
+                                   FileName = path,
                                    Verb = "runas"
                                };
-                server = Process.Start(info);
                 try
                 {
-                    server.WaitForExit();
-                }
-                catch (ArgumentException)
-                {
-                    // already gone
-                }
+                    server = Process.Start(info);
+                    try
+                    {
+                        if (server != null) server.WaitForExit();
+                    }
+                    catch (ArgumentException)
+                    {
+                        // already gone
+                    }
 
-                info = new ProcessStartInfo
-               {
-                   Arguments = "-uninstallservice",
-                   FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby-Server", "System", "MediaBrowser.ServerApplication.exe"),
-                   Verb = "runas"
-               };
-                server = Process.Start(info);
-                try
-                {
-                    server.WaitForExit();
                 }
-                catch (ArgumentException)
+                catch (Exception ex)
                 {
-                    // already gone
+                        MessageBox.Show("Unable to uninstall service.  Please ensure it is not running before hitting OK.\n\n" + ex.Message, "Error");
                 }
 
             }
@@ -230,6 +225,7 @@ namespace MediaBrowser.Uninstaller
             }
 
             var rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaBrowser" + RootSuffix);
+            if (!Directory.Exists(rootPath)) rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Emby" + RootSuffix);
 
             lblHeading.Content = "Removing System Files...";
             if (cbxRemoveAll.IsChecked == true)

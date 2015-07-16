@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("MediaBrowser.Uninstaller")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Media Browser Team")]
+[assembly: AssemblyCompany("Emby Media")]
 [assembly: AssemblyProduct("MediaBrowser.Uninstaller")]
-[assembly: AssemblyCopyright("Copyright © Media Browser Team 2013")]
+[assembly: AssemblyCopyright("Copyright © Emby Media 2013-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
