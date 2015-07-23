@@ -585,6 +585,8 @@ namespace MediaBrowser.InstallUtil
         {
             return Task.Run(() =>
                                 {
+                                    var retryCount = 0;
+                                    var success = false;
                                     // Delete old content of system
                                     if (Directory.Exists(systemDir))
                                     {
@@ -601,20 +603,43 @@ namespace MediaBrowser.InstallUtil
                                             return new InstallationResult(false, "Could not delete previous backup directory.", e);
                                         }
 
-                                        try
+                                        retryCount = 0;
+                                        success = false;
+                                        while (!success)
                                         {
-                                            Directory.Move(systemDir, backupDir);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Trace.TraceError("Error creating backup. {0}", e.Message);
-                                            return new InstallationResult(false, "Could not move system directory to backup.", e);
+                                            try
+                                            {
+                                                Directory.Move(systemDir, backupDir);
+                                                success = true;
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                // Sighting of system->ntkrnlpa.exe->fltmgr.sys(6.1.7600.16385) on Windows 7 with no updates
+                                                // shows that the release the file handle to the .exe in systemDir folder can take up to 
+                                                // a minute to clear. Appears to be a flushing issue and the shutdown and move(delete) happen too quickly.
+                                                // fltmgr.sys performs a CreateFileMapping on MediaBrowser.ServerApplication.exe
+                                                // then asynchronously with the application closure it finally does a Close on the handle about a minute later.
+
+                                                // Be prepared to wait up to 5 mins for all file accesses to clear before Move(delete) will succeed.
+                                                // Only required on some Windows systems.
+                                                if (retryCount < 5 * 60) 
+                                                {
+                                                    Trace.TraceError("Move attempt failed (likely another process still has a file open). Will retry... Error: " + e.Message);
+                                                    Thread.Sleep(1000);
+                                                    retryCount++;
+                                                }
+                                                else
+                                                {
+                                                    Trace.TraceError("Error creating backup. {0}", e.Message);
+                                                    return new InstallationResult(false, "Could not move system directory to backup.", e);
+                                                }
+                                            }
                                         }
                                     }
 
                                     // And extract
-                                    var retryCount = 0;
-                                    var success = false;
+                                    retryCount = 0;
+                                    success = false;
                                     while (!success)
                                     {
                                         try
